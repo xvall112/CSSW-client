@@ -7,10 +7,13 @@ import {
   Box,
   Hidden,
   IconButton,
-  Toolbar
+  Toolbar,
+  Typography,
+  Grid
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
+
 import InputIcon from '@material-ui/icons/Input';
 import Logo from './Logo';
 
@@ -18,13 +21,23 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
   const [notifications] = useState([]);
 
   return (
-    <AppBar
-      elevation={0}
-      {...rest}
-    >
+    <AppBar elevation={0} {...rest}>
       <Toolbar>
         <RouterLink to="/">
-          <Logo />
+          <Grid container direction="row" alignItems="center" spacing={3}>
+            <Grid item>
+              <Box height="50px">
+                <Logo />
+              </Box>
+            </Grid>
+            <Grid item>
+              <Box>
+                <Typography variant="h4" color="primaryText">
+                  CSSW
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
         </RouterLink>
         <Box sx={{ flexGrow: 1 }} />
         <Hidden lgDown>
@@ -42,10 +55,7 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
           </IconButton>
         </Hidden>
         <Hidden lgUp>
-          <IconButton
-            color="inherit"
-            onClick={onMobileNavOpen}
-          >
+          <IconButton color="inherit" onClick={onMobileNavOpen}>
             <MenuIcon />
           </IconButton>
         </Hidden>

@@ -17,7 +17,7 @@ import {
 } from '@material-ui/core';
 import getInitials from 'src/utils/getInitials';
 
-const CustomerListResults = ({ customers, ...rest }) => {
+const UsersListResults = ({ customers, ...rest }) => {
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
@@ -39,11 +39,18 @@ const CustomerListResults = ({ customers, ...rest }) => {
     let newSelectedCustomerIds = [];
 
     if (selectedIndex === -1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds, id);
+      newSelectedCustomerIds = newSelectedCustomerIds.concat(
+        selectedCustomerIds,
+        id
+      );
     } else if (selectedIndex === 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(1));
+      newSelectedCustomerIds = newSelectedCustomerIds.concat(
+        selectedCustomerIds.slice(1)
+      );
     } else if (selectedIndex === selectedCustomerIds.length - 1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(0, -1));
+      newSelectedCustomerIds = newSelectedCustomerIds.concat(
+        selectedCustomerIds.slice(0, -1)
+      );
     } else if (selectedIndex > 0) {
       newSelectedCustomerIds = newSelectedCustomerIds.concat(
         selectedCustomerIds.slice(0, selectedIndex),
@@ -74,27 +81,17 @@ const CustomerListResults = ({ customers, ...rest }) => {
                     checked={selectedCustomerIds.length === customers.length}
                     color="primary"
                     indeterminate={
-                      selectedCustomerIds.length > 0
-                      && selectedCustomerIds.length < customers.length
+                      selectedCustomerIds.length > 0 &&
+                      selectedCustomerIds.length < customers.length
                     }
                     onChange={handleSelectAll}
                   />
                 </TableCell>
-                <TableCell>
-                  Name
-                </TableCell>
-                <TableCell>
-                  Email
-                </TableCell>
-                <TableCell>
-                  Location
-                </TableCell>
-                <TableCell>
-                  Phone
-                </TableCell>
-                <TableCell>
-                  Registration date
-                </TableCell>
+                <TableCell>Jméno</TableCell>
+                <TableCell>Uživatelské jméno</TableCell>
+                <TableCell>Útvar</TableCell>
+                <TableCell>Číslo</TableCell>
+                <TableCell>Datum registrace</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -118,29 +115,17 @@ const CustomerListResults = ({ customers, ...rest }) => {
                         display: 'flex'
                       }}
                     >
-                      <Avatar
-                        src={customer.avatarUrl}
-                        sx={{ mr: 2 }}
-                      >
+                      <Avatar src={customer.avatarUrl} sx={{ mr: 2 }}>
                         {getInitials(customer.name)}
                       </Avatar>
-                      <Typography
-                        color="textPrimary"
-                        variant="body1"
-                      >
+                      <Typography color="textPrimary" variant="body1">
                         {customer.name}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>
-                    {customer.email}
-                  </TableCell>
-                  <TableCell>
-                    {`${customer.address.city}, ${customer.address.state}, ${customer.address.country}`}
-                  </TableCell>
-                  <TableCell>
-                    {customer.phone}
-                  </TableCell>
+                  <TableCell>{customer.email}</TableCell>
+                  <TableCell>{customer.utvar}</TableCell>
+                  <TableCell>{customer.phone}</TableCell>
                   <TableCell>
                     {moment(customer.createdAt).format('DD/MM/YYYY')}
                   </TableCell>
@@ -163,8 +148,8 @@ const CustomerListResults = ({ customers, ...rest }) => {
   );
 };
 
-CustomerListResults.propTypes = {
+UsersListResults.propTypes = {
   customers: PropTypes.array.isRequired
 };
 
-export default CustomerListResults;
+export default UsersListResults;

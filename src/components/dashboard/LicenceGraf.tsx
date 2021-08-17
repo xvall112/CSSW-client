@@ -12,7 +12,7 @@ import {
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
-const Sales = (props) => {
+const LicenceGraf = (props: any) => {
   const theme = useTheme();
 
   const data = {
@@ -32,7 +32,7 @@ const Sales = (props) => {
   };
 
   const options = {
-    animation: false,
+    animation: true,
     cornerRadius: 20,
     layout: { padding: 0 },
     legend: { display: false },
@@ -87,52 +87,47 @@ const Sales = (props) => {
   };
 
   return (
-    <Card {...props}>
-      <CardHeader
-        action={(
+    <>
+      <Card {...props}>
+        <CardHeader
+          action={
+            <Button endIcon={<ArrowDropDownIcon />} size="small" variant="text">
+              Last 7 days
+            </Button>
+          }
+          title="Latest Sales"
+        />
+        <Divider />
+        <CardContent>
+          <Box
+            sx={{
+              height: 400,
+              position: 'relative'
+            }}
+          >
+            <Bar data={data} options={options} />
+          </Box>
+        </CardContent>
+        <Divider />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            p: 2
+          }}
+        >
           <Button
-            endIcon={<ArrowDropDownIcon />}
+            color="primary"
+            endIcon={<ArrowRightIcon />}
             size="small"
             variant="text"
           >
-            Last 7 days
+            Overview
           </Button>
-        )}
-        title="Latest Sales"
-      />
-      <Divider />
-      <CardContent>
-        <Box
-          sx={{
-            height: 400,
-            position: 'relative'
-          }}
-        >
-          <Bar
-            data={data}
-            options={options}
-          />
         </Box>
-      </CardContent>
-      <Divider />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          p: 2
-        }}
-      >
-        <Button
-          color="primary"
-          endIcon={<ArrowRightIcon />}
-          size="small"
-          variant="text"
-        >
-          Overview
-        </Button>
-      </Box>
-    </Card>
+      </Card>
+    </>
   );
 };
 
-export default Sales;
+export default LicenceGraf;

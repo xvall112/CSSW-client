@@ -12,21 +12,18 @@ import {
   Typography
 } from '@material-ui/core';
 import {
-  AlertCircle as AlertCircleIcon,
   BarChart as BarChartIcon,
   Lock as LockIcon,
   Settings as SettingsIcon,
   ShoppingBag as ShoppingBagIcon,
-  User as UserIcon,
-  UserPlus as UserPlusIcon,
   Users as UsersIcon
 } from 'react-feather';
 import NavItem from './NavItem';
 
 const user = {
-  avatar: '/static/images/avatars/avatar_6.png',
-  jobTitle: 'Senior Developer',
-  name: 'Katarina Smith'
+  avatar: '/static/images/avatars/avatar_3.png',
+  jobTitle: 'Software manager',
+  name: 'Jan Luka'
 };
 
 const items = [
@@ -36,39 +33,24 @@ const items = [
     title: 'Dashboard'
   },
   {
+    href: '/app/functions',
+    icon: SettingsIcon,
+    title: 'Funkce'
+  },
+  {
+    href: '/app/software',
+    icon: ShoppingBagIcon,
+    title: 'Software'
+  },
+  {
     href: '/app/customers',
     icon: UsersIcon,
-    title: 'Customers'
-  },
-  {
-    href: '/app/products',
-    icon: ShoppingBagIcon,
-    title: 'Products'
-  },
-  {
-    href: '/app/account',
-    icon: UserIcon,
-    title: 'Account'
-  },
-  {
-    href: '/app/settings',
-    icon: SettingsIcon,
-    title: 'Settings'
+    title: 'Účty'
   },
   {
     href: '/login',
     icon: LockIcon,
     title: 'Login'
-  },
-  {
-    href: '/register',
-    icon: UserPlusIcon,
-    title: 'Register'
-  },
-  {
-    href: '/404',
-    icon: AlertCircleIcon,
-    title: 'Error'
   }
 ];
 
@@ -107,16 +89,10 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
           }}
           to="/app/account"
         />
-        <Typography
-          color="textPrimary"
-          variant="h5"
-        >
+        <Typography color="textPrimary" variant="h5">
           {user.name}
         </Typography>
-        <Typography
-          color="textSecondary"
-          variant="body2"
-        >
+        <Typography color="textSecondary" variant="body2">
           {user.jobTitle}
         </Typography>
       </Box>
@@ -141,18 +117,11 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
           p: 2
         }}
       >
-        <Typography
-          align="center"
-          gutterBottom
-          variant="h4"
-        >
-          Need more?
+        <Typography align="center" gutterBottom variant="h4">
+          Máte připomínky?
         </Typography>
-        <Typography
-          align="center"
-          variant="body2"
-        >
-          Upgrade to PRO version and access 20 more screens
+        <Typography align="center" variant="body2">
+          Napište nám
         </Typography>
         <Box
           sx={{
@@ -161,13 +130,8 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
             pt: 2
           }}
         >
-          <Button
-            color="primary"
-            component="a"
-            href="https://react-material-kit.devias.io"
-            variant="contained"
-          >
-            See PRO version
+          <Button color="primary" component="a" href="" variant="contained">
+            Formulář
           </Button>
         </Box>
       </Box>
@@ -217,7 +181,7 @@ DashboardSidebar.propTypes = {
 };
 
 DashboardSidebar.defaultProps = {
-  onMobileClose: () => { },
+  onMobileClose: () => {},
   openMobile: false
 };
 
