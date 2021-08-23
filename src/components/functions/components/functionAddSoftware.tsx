@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Yup from 'yup';
-
+import { gql, useMutation } from '@apollo/client';
 import { Formik } from 'formik';
 import {
   Box,
@@ -16,27 +16,54 @@ import {
 } from '@material-ui/core';
 import { licence } from '../../../__mocks__/licence';
 
+const UPDATE_LICENCE = gql`
+  mutation UpdateLicence($input: UpdateLicenceInput) {
+    updateLicence(input: $input) {
+      nazev
+      pozadavek
+      station
+    }
+  }
+`;
+
 const FunctionAddSoftware = () => {
+  const [updateLicence, { data, loading, error }] = useMutation(
+    UPDATE_LICENCE,
+    {
+      refetchQueries: [
+        'GetLicences' // Query name
+      ]
+    }
+  );
   const instalSoftware = ['cali', 'office', 'operační systém'];
+
   return (
     <Grid item xs={12}>
       <Formik
         initialValues={{
-          cisloStanice: '',
-          cisloPozadavku: '',
+          station: '',
+          pozadavek: '',
           software: []
         }}
         validationSchema={Yup.object().shape({
-          cisloStanice: Yup.number().required('Vyplňte číslo stanice'),
-          cisloPozadavku: Yup.string()
-            .max(255)
-            .required('Vyplňte číslo požadavku'),
+          station: Yup.number().required('Vyplňte číslo stanice'),
+          pozadavek: Yup.string().max(255).required('Vyplňte číslo požadavku'),
           software: Yup.array().required('Zvolte software')
         })}
-        onSubmit={(values) => {
+        onSubmit={(values, formik) => {
+          updateLicence({
+            variables: {
+              input: {
+                station: values.station,
+                pozadavek: values.pozadavek
+              }
+            }
+          });
           setTimeout(() => {
             alert(JSON.stringify(values, null, 2));
           }, 500);
+
+          formik.resetForm();
         }}
       >
         {({
@@ -50,29 +77,29 @@ const FunctionAddSoftware = () => {
         }) => (
           <form onSubmit={handleSubmit}>
             <TextField
-              error={Boolean(touched.cisloStanice && errors.cisloStanice)}
+              error={Boolean(touched.station && errors.station)}
               fullWidth
-              helperText={touched.cisloStanice && errors.cisloStanice}
+              helperText={touched.station && errors.station}
               label="Číslo stanice"
               margin="normal"
-              name="cisloStanice"
+              name="station"
               onBlur={handleBlur}
               onChange={handleChange}
               type="number"
-              value={values.cisloStanice}
+              value={values.station}
               variant="outlined"
             />
             <TextField
-              error={Boolean(touched.cisloPozadavku && errors.cisloPozadavku)}
+              error={Boolean(touched.pozadavek && errors.pozadavek)}
               fullWidth
-              helperText={touched.cisloPozadavku && errors.cisloPozadavku}
+              helperText={touched.pozadavek && errors.pozadavek}
               label="Číslo požadavku"
               margin="normal"
-              name="cisloPozadavku"
+              name="pozadavek"
               onBlur={handleBlur}
               onChange={handleChange}
               type="name"
-              value={values.cisloPozadavku}
+              value={values.pozadavek}
               variant="outlined"
             />
             <Grid

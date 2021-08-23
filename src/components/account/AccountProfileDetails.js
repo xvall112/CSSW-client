@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import * as yup from 'yup';
+import { useFormik } from 'formik';
 import {
   Box,
   Button,
@@ -6,176 +7,114 @@ import {
   CardContent,
   CardHeader,
   Divider,
-  Grid,
-  TextField
+  TextField,
+  Stack
 } from '@material-ui/core';
+import DeleteAccount from './DeleteAccount';
 
-const states = [
-  {
-    value: 'alabama',
-    label: 'Alabama'
-  },
-  {
-    value: 'new-york',
-    label: 'New York'
-  },
-  {
-    value: 'san-francisco',
-    label: 'San Francisco'
-  }
-];
+const validationSchema = yup.object({
+  name: yup.string().required('Vyplňte jméno'),
+  userName: yup.string().required('Vyplňte uživatelské jméno'),
+  utvar: yup.number().integer('pouze číslo').required('Vyplňte útvar'),
+  phone: yup.number().integer('pouze číslo').required('Vyplňte telefoní číslo')
+});
 
 const AccountProfileDetails = (props) => {
-  const [values, setValues] = useState({
-    firstName: 'Katarina',
-    lastName: 'Smith',
-    email: 'demo@devias.io',
-    phone: '',
-    state: 'Alabama',
-    country: 'USA'
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      userName: '',
+      utvar: '',
+      phone: ''
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      setTimeout(() => {
+        alert(JSON.stringify(values, null, 2));
+      }, 500);
+    }
   });
 
-  const handleChange = (event) => {
-    setValues({
-      ...values,
-      [event.target.name]: event.target.value
-    });
-  };
-
   return (
-    <form
-      autoComplete="off"
-      noValidate
-      {...props}
-    >
+    <form onSubmit={formik.handleSubmit} autoComplete="off">
       <Card>
         <CardHeader
-          subheader="The information can be edited"
-          title="Profile"
+          /* subheader="The information can be edited" */ title="ÚČET"
         />
         <Divider />
         <CardContent>
-          <Grid
-            container
-            spacing={3}
-          >
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                helperText="Please specify the first name"
-                label="First name"
-                name="firstName"
-                onChange={handleChange}
-                required
-                value={values.firstName}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Last name"
-                name="lastName"
-                onChange={handleChange}
-                required
-                value={values.lastName}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Email Address"
-                name="email"
-                onChange={handleChange}
-                required
-                value={values.email}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Phone Number"
-                name="phone"
-                onChange={handleChange}
-                type="number"
-                value={values.phone}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Country"
-                name="country"
-                onChange={handleChange}
-                required
-                value={values.country}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Select State"
-                name="state"
-                onChange={handleChange}
-                required
-                select
-                SelectProps={{ native: true }}
-                value={values.state}
-                variant="outlined"
-              >
-                {states.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </option>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
+          <TextField
+            error={Boolean(formik.touched.name && formik.errors.name)}
+            fullWidth
+            helperText={formik.touched.name && formik.errors.name}
+            label="Jméno"
+            margin="normal"
+            name="name"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="name"
+            value={formik.values.name}
+            variant="outlined"
+          />
+          <TextField
+            error={Boolean(formik.touched.userName && formik.errors.userName)}
+            fullWidth
+            helperText={formik.touched.userName && formik.errors.userName}
+            label="Uživatelské jméno"
+            margin="normal"
+            name="userName"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="name"
+            value={formik.values.userName}
+            variant="outlined"
+          />
+          <Stack direction="row" alignItems="center">
+            <TextField
+              error={Boolean(formik.touched.utvar && formik.errors.utvar)}
+              fullWidth
+              helperText={formik.touched.utvar && formik.errors.utvar}
+              label="Útvar"
+              margin="normal"
+              name="utvar"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              type="number"
+              value={formik.values.utvar}
+              variant="outlined"
+            />
+            <TextField
+              sx={{ ml: 2 }}
+              error={Boolean(formik.touched.phone && formik.errors.phone)}
+              fullWidth
+              helperText={formik.touched.phone && formik.errors.phone}
+              label="Telefonní číslo"
+              margin="normal"
+              name="phone"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              type="number"
+              value={formik.values.phone}
+              variant="outlined"
+            />
+          </Stack>
         </CardContent>
         <Divider />
         <Box
           sx={{
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
             p: 2
           }}
         >
+          <DeleteAccount />
           <Button
             color="primary"
             variant="contained"
+            disabled={formik.isSubmitting}
+            type="submit"
           >
-            Save details
+            uložit
           </Button>
         </Box>
       </Card>

@@ -8,6 +8,7 @@ import {
   SvgIcon
 } from '@material-ui/core';
 import { Search as SearchIcon } from 'react-feather';
+import AddUserForm from './AddUserForm';
 
 const UsersListToolbar = (props) => (
   <Box {...props}>
@@ -23,9 +24,7 @@ const UsersListToolbar = (props) => (
       <Button sx={{ mx: 1 }}>
         Export
       </Button> */}
-      <Button color="primary" variant="contained">
-        přidat uživatele
-      </Button>
+      <AddUserForm />
     </Box>
     <Box sx={{ mt: 3 }}>
       <Card>

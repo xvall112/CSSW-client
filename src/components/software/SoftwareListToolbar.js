@@ -19,7 +19,7 @@ const SoftwareListToolbar = (props) => (
     >
       <Button sx={{ mx: 1 }}>Export</Button>
       <Button color="primary" variant="contained">
-        importovat software
+        importovat licence
       </Button>
     </Box>
     <Box sx={{ mt: 3 }}>
@@ -37,7 +37,7 @@ const SoftwareListToolbar = (props) => (
                   </InputAdornment>
                 )
               }}
-              placeholder="Vyhledat software"
+              placeholder="Vyhledat licence"
               variant="outlined"
             />
           </Box>

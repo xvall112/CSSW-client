@@ -36,29 +36,19 @@ const AccountProfile = (props) => (
             width: 100
           }}
         />
-        <Typography
-          color="textPrimary"
-          gutterBottom
-          variant="h3"
-        >
+        <Typography color="textPrimary" gutterBottom variant="h3">
           {user.name}
         </Typography>
-        <Typography
-          color="textSecondary"
-          variant="body1"
-        >
+        <Typography color="textSecondary" variant="body1">
           {`${user.city} ${user.country}`}
         </Typography>
-        <Typography
-          color="textSecondary"
-          variant="body1"
-        >
+        {/*  <Typography color="textSecondary" variant="body1">
           {`${moment().format('hh:mm A')} ${user.timezone}`}
-        </Typography>
+        </Typography> */}
       </Box>
     </CardContent>
     <Divider />
-    <CardActions>
+    {/* <CardActions>
       <Button
         color="primary"
         fullWidth
@@ -66,7 +56,7 @@ const AccountProfile = (props) => (
       >
         Upload picture
       </Button>
-    </CardActions>
+    </CardActions> */}
   </Card>
 );
 

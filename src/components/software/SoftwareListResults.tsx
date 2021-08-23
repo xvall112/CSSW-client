@@ -5,7 +5,6 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
   Box,
   Card,
-  Checkbox,
   Table,
   TableBody,
   TableCell,
@@ -14,14 +13,16 @@ import {
   TableRow
 } from '@material-ui/core';
 import getInitials from 'src/utils/getInitials';
-import { software } from '../../__mocks__/software';
 
-const SoftwareListResults = ({ customers, ...rest }) => {
+interface Props {
+  licences?: any;
+}
+const SoftwareListResults = ({ licences, ...rest }: Props) => {
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
 
-  const handleSelectAll = (event) => {
+  /*  const handleSelectAll = (event) => {
     let newSelectedCustomerIds;
 
     if (event.target.checked) {
@@ -58,13 +59,13 @@ const SoftwareListResults = ({ customers, ...rest }) => {
     }
 
     setSelectedCustomerIds(newSelectedCustomerIds);
-  };
+  }; */
 
-  const handleLimitChange = (event) => {
+  const handleLimitChange = (event?: any) => {
     setLimit(event.target.value);
   };
 
-  const handlePageChange = (event, newPage) => {
+  const handlePageChange = (event?: any, newPage?: any) => {
     setPage(newPage);
   };
 
@@ -89,25 +90,21 @@ const SoftwareListResults = ({ customers, ...rest }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {software.slice(0, limit).map((item) => (
-                <TableRow
-                  hover
-                  key={item.id}
-                  selected={
-                    selectedCustomerIds.indexOf(item.evidenceNumber) !== -1
-                  }
-                >
+              {licences.slice(0, limit).map((item: any) => (
+                <TableRow key={item.id}>
                   <TableCell>{item.kcm}</TableCell>
-                  <TableCell> {item.nazev}</TableCell>
-                  <TableCell> {item.partNumber}</TableCell>
-                  <TableCell> {item.nameProduct}</TableCell>
-                  <TableCell> {item.SA}</TableCell>
-                  <TableCell> {item.SAplatnost}</TableCell>
-                  <TableCell> {item.evidenceNumber}</TableCell>
-                  <TableCell> {item.smlouva}</TableCell>
-                  <TableCell> {item.station}</TableCell>
-                  <TableCell> {item.pozadavek}</TableCell>
-                  <TableCell> {item.dateOfChange}</TableCell>
+                  <TableCell>{item.nazev}</TableCell>
+                  <TableCell>{item.partNumber}</TableCell>
+                  <TableCell>{item.nameProduct}</TableCell>
+                  <TableCell>{item.SA}</TableCell>
+                  <TableCell>{item.SAplatnost}</TableCell>
+                  <TableCell>{item.evidenceNumber}</TableCell>
+                  <TableCell>{item.smlouva}</TableCell>
+                  <TableCell>{item.station}</TableCell>
+                  <TableCell>{item.pozadavek}</TableCell>
+                  <TableCell>
+                    {moment(item.dateOfChange).format('DD/MM/YYYY')}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -116,7 +113,7 @@ const SoftwareListResults = ({ customers, ...rest }) => {
       </PerfectScrollbar>
       <TablePagination
         component="div"
-        count={customers.length}
+        count={licences.length}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleLimitChange}
         page={page}
@@ -125,10 +122,6 @@ const SoftwareListResults = ({ customers, ...rest }) => {
       />
     </Card>
   );
-};
-
-SoftwareListResults.propTypes = {
-  customers: PropTypes.array.isRequired
 };
 
 export default SoftwareListResults;

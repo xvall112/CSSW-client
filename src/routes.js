@@ -7,6 +7,7 @@ import Dashboard from 'src/pages/Dashboard';
 import Login from 'src/pages/Login';
 import NotFound from 'src/pages/NotFound';
 import SoftwareList from 'src/pages/SoftwareList';
+import Account from 'src/pages/Account';
 
 const routes = [
   {
@@ -16,7 +17,8 @@ const routes = [
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'functions', element: <FunctionsSoftware /> },
       { path: 'software', element: <SoftwareList /> },
-      { path: 'customers', element: <UsersList /> },
+      { path: 'users', element: <UsersList /> },
+      { path: 'account', element: <Account /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   },

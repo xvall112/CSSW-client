@@ -12,8 +12,8 @@ const LicenceCard = (props: Props) => {
   const { licence } = props;
   return (
     <Grid container direction="row" spacing={2}>
-      {licence.map((item: any) => (
-        <Grid item xs={12} md={4}>
+      {licence.map((item: any, index: any) => (
+        <Grid item xs={12} md={4} key={index}>
           <Card sx={{ height: '100%' }} {...props} key={item.title}>
             <CardContent>
               <Grid item xs={12}>

@@ -1,6 +1,6 @@
 import { colors } from '@material-ui/core';
 
-export default {
+const pallete = {
   primary: {
     main: '#ffd117',
     light: '#FFEC9E',
@@ -22,3 +22,4 @@ export default {
     paper: colors.common.white
   }
 };
+export default pallete;

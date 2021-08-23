@@ -43,7 +43,7 @@ const items = [
     title: 'Software'
   },
   {
-    href: '/app/customers',
+    href: '/app/users',
     icon: UsersIcon,
     title: 'Účty'
   },
