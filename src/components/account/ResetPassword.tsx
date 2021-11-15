@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -8,31 +7,29 @@ import { gql, useMutation } from '@apollo/client';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { toast } from 'react-toastify';
-import { SEARCH_USERS } from 'src/pages/UsersList';
+import { SEARCH_USERS } from '../../pages/UsersList';
 
-const DELETE_USER = gql`
-  mutation DeleteUserMutation($id: ID!) {
-    deleteUser(id: $id) {
+const RESET_USER_PASSWORD = gql`
+  mutation ResetPassword($id: ID!) {
+    resetPassword(id: $id) {
       name
     }
   }
 `;
 
 interface Props {
-  userData: {
-    id: String;
-    name: String;
-  };
+  userData: { id: String; name: String };
   disabled?: boolean;
 }
 
-const DeleteAccount = ({ userData, disabled }: Props) => {
-  let navigate = useNavigate();
-  const [deleteUser, { data, loading, error }] = useMutation(DELETE_USER, {
-    refetchQueries: [{ query: SEARCH_USERS, variables: { contains: '' } }],
-    awaitRefetchQueries: true
-  });
+const ResetPassword = ({ userData, disabled }: Props) => {
   const { id, name } = userData;
+  const [resetPassword, { data, loading, error }] = useMutation(
+    RESET_USER_PASSWORD,
+    {
+      refetchQueries: [{ query: SEARCH_USERS }]
+    }
+  );
 
   const [open, setOpen] = useState(false);
 
@@ -44,18 +41,20 @@ const DeleteAccount = ({ userData, disabled }: Props) => {
     setOpen(false);
   };
 
-  const handleDelete = async () => {
+  const handleReset = async () => {
     await setOpen(false);
-    await navigate(`/app/users`);
-    await deleteUser({
+    await resetPassword({
       variables: {
         id: id
       }
     });
-    toast.success(`Uživatel ${name} byl úspěšně smazán`, {});
+    toast.success(`Uživateli ${name} bylo úspěšně resetováno heslo`, {});
   };
   if (error) {
-    toast.error(`Uživatele ${name} se nepodařilo smazat: ${error.message}`, {});
+    toast.error(
+      `Uživatele ${name} se nepodařilo resetovat heslo: ${error.message}`,
+      {}
+    );
   }
 
   return (
@@ -72,7 +71,7 @@ const DeleteAccount = ({ userData, disabled }: Props) => {
         disabled={disabled}
         onClick={handleClickOpen}
       >
-        smazat uživatele
+        resetovat heslo
       </Button>
       <Dialog
         open={open}
@@ -81,19 +80,19 @@ const DeleteAccount = ({ userData, disabled }: Props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {`Oprvadu chcete smazat uživatele ${name}?`}
+          {`Oprvadu chcete uživateli ${name} resetovat heslo?`}
         </DialogTitle>
 
         <DialogActions>
           <Button onClick={handleClose} autoFocus>
             Zrušit
           </Button>
-          <Button variant="outlined" color="error" onClick={handleDelete}>
-            smazat
+          <Button variant="outlined" color="error" onClick={handleReset}>
+            resetovat heslo
           </Button>
         </DialogActions>
       </Dialog>
     </div>
   );
 };
-export default DeleteAccount;
+export default ResetPassword;

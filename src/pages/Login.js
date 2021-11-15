@@ -1,19 +1,75 @@
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as Yup from 'yup';
-import { Formik } from 'formik';
+import { useMutation, gql } from '@apollo/client';
+import * as yup from 'yup';
+import { useFormik } from 'formik';
 import {
   Box,
   Button,
   Container,
   TextField,
   Typography,
-  Grid
+  Grid,
+  Card,
+  CardContent,
+  LinearProgress,
+  Alert
 } from '@material-ui/core';
 import SEO from '../components/seo';
 import Logo from '../components/Logo';
+import { AuthContext } from '../context/auth-context';
+
+const USER_LOGIN = gql`
+  mutation loginUser($userName: String!, $password: String!) {
+    login(userName: $userName, password: $password) {
+      id
+      name
+      userName
+      token
+      role
+    }
+  }
+`;
+const validationSchema = yup.object({
+  userName: yup.string().max(255).required('Vyplňte uživatelské jméno'),
+  password: yup.string().max(255).required('Vyplňte heslo')
+});
 
 const Login = () => {
+  const auth = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const [loginUser, { data, loading, error }] = useMutation(USER_LOGIN, {
+    onCompleted(data) {
+      console.log(data);
+      auth.login(
+        data.login.id,
+        data.login.token,
+        data.login.name,
+        data.login.userName,
+        data.login.role
+      );
+      formik.resetForm();
+      navigate(`/app/dashboard`);
+    }
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      userName: '',
+      password: ''
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      console.log(values);
+      await loginUser({
+        variables: {
+          userName: values.userName,
+          password: values.password
+        }
+      });
+    }
+  });
 
   return (
     <>
@@ -28,31 +84,10 @@ const Login = () => {
         }}
       >
         <Container maxWidth="sm">
-          <Formik
-            initialValues={{
-              userName: '',
-              password: ''
-            }}
-            validationSchema={Yup.object().shape({
-              userName: Yup.string()
-                .max(255)
-                .required('Vyplňte uživatelské jméno'),
-              password: Yup.string().max(255).required('Vyplňte heslo')
-            })}
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
-            }}
-          >
-            {({
-              errors,
-              handleBlur,
-              handleChange,
-              handleSubmit,
-              isSubmitting,
-              touched,
-              values
-            }) => (
-              <form onSubmit={handleSubmit}>
+          <Card>
+            {(formik.isSubmitting || loading) && <LinearProgress />}
+            <CardContent>
+              <form onSubmit={formik.handleSubmit}>
                 <Box sx={{ mb: 3 }}>
                   <Grid container direction="column">
                     <Grid
@@ -77,36 +112,42 @@ const Login = () => {
                     </Grid>
                   </Grid>
                 </Box>
+                {error && <Alert severity="error">{error.message}</Alert>}
+
                 <TextField
-                  error={Boolean(touched.userName && errors.userName)}
+                  error={Boolean(
+                    formik.touched.userName && formik.errors.userName
+                  )}
                   fullWidth
-                  helperText={touched.userName && errors.userName}
+                  helperText={formik.touched.userName && formik.errors.userName}
                   label="Uživatelské jméno"
                   margin="normal"
                   name="userName"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
                   type="userName"
-                  value={values.userName}
+                  value={formik.values.userName}
                   variant="outlined"
                 />
                 <TextField
-                  error={Boolean(touched.password && errors.password)}
+                  error={Boolean(
+                    formik.touched.password && formik.errors.password
+                  )}
                   fullWidth
-                  helperText={touched.password && errors.password}
+                  helperText={formik.touched.password && formik.errors.password}
                   label="Heslo"
                   margin="normal"
                   name="password"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
                   type="password"
-                  value={values.password}
+                  value={formik.values.password}
                   variant="outlined"
                 />
                 <Box sx={{ py: 2 }}>
                   <Button
                     color="primary"
-                    disabled={isSubmitting}
+                    disabled={formik.isSubmitting || loading}
                     fullWidth
                     size="large"
                     type="submit"
@@ -116,8 +157,8 @@ const Login = () => {
                   </Button>
                 </Box>
               </form>
-            )}
-          </Formik>
+            </CardContent>
+          </Card>
         </Container>
       </Box>
     </>

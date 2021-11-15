@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
-import Button from '@material-ui/core/Button';
+import { Button, Alert, LinearProgress } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -8,23 +8,34 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
+import { toast } from 'react-toastify';
+import { UserPlus as UserPlusIcon } from 'react-feather';
 
 const CREATE_USER = gql`
   mutation CreateUserMutation($input: CreateUserInput!) {
     createUser(input: $input) {
-      phone
-      utvar
       name
-      userName
     }
   }
 `;
+
+const states = [
+  {
+    value: 2,
+    label: 'User'
+  },
+  {
+    value: 1,
+    label: 'Admin'
+  }
+];
 
 const validationSchema = yup.object({
   name: yup.string().required('Vyplňte jméno'),
   userName: yup.string().required('Vyplňte uživatelské jméno'),
   utvar: yup.number().integer('pouze číslo').required('Vyplňte útvar'),
-  phone: yup.number().integer('pouze číslo').required('Vyplňte telefoní číslo')
+  phone: yup.number().integer('pouze číslo').required('Vyplňte telefoní číslo'),
+  role: yup.string().required('Zvolte roli')
 });
 
 const AddUserForm = () => {
@@ -36,11 +47,12 @@ const AddUserForm = () => {
 
   const handleClose = () => {
     setOpen(false);
+    formik.resetForm();
   };
 
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER, {
     refetchQueries: [
-      'GetUsers' // Query name
+      'GetSearchUsers' // Query name
     ]
   });
 
@@ -49,30 +61,44 @@ const AddUserForm = () => {
       name: '',
       userName: '',
       utvar: '',
-      phone: ''
+      phone: '',
+      role: '2'
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      console.log(values);
       await createUser({
         variables: {
-          input: values
+          input: { ...values, role: parseInt(values.role) }
         }
       });
-      setTimeout(() => {
-        alert(JSON.stringify(values, null, 2));
-        formik.resetForm();
-        handleClose();
-      }, 500);
+      await formik.resetForm();
+      await handleClose();
+      await toast.success(`Uživatel ${values.name} byl úspěšně přidán`, {});
     }
   });
-  if (error) return `Submission error! ${error.message}`;
+
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleClickOpen}>
+      <Button
+        startIcon={<UserPlusIcon />}
+        variant="contained"
+        color="primary"
+        onClick={handleClickOpen}
+      >
         přidat uživatele
       </Button>
       <Dialog open={open} onClose={handleClose}>
+        {loading && <LinearProgress />}
+
         <DialogTitle>Přidat uživatele</DialogTitle>
+        {error && (
+          <DialogTitle>
+            <Alert variant="filled" severity="error">
+              {error.message}
+            </Alert>
+          </DialogTitle>
+        )}
         <form onSubmit={formik.handleSubmit} autoComplete="off">
           <DialogContent>
             <TextField
@@ -101,6 +127,7 @@ const AddUserForm = () => {
               value={formik.values.userName}
               variant="outlined"
             />
+
             <TextField
               error={Boolean(formik.touched.utvar && formik.errors.utvar)}
               fullWidth
@@ -127,14 +154,38 @@ const AddUserForm = () => {
               value={formik.values.phone}
               variant="outlined"
             />
+
+            <TextField
+              sx={{ mt: 2 }}
+              error={Boolean(formik.touched.role && formik.errors.role)}
+              fullWidth
+              helperText={formik.touched.role && formik.errors.role}
+              label="Role"
+              name="role"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              select
+              SelectProps={{ native: true }}
+              value={formik.values.role}
+              variant="outlined"
+            >
+              {states.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} disabled={formik.isSubmitting}>
+            <Button
+              onClick={handleClose}
+              disabled={formik.isSubmitting || loading}
+            >
               Zrušit
             </Button>
             <Button
               variant="contained"
-              disabled={formik.isSubmitting}
+              disabled={formik.isSubmitting || loading}
               type="submit"
             >
               Přidat

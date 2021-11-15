@@ -1,5 +1,6 @@
 import { useState } from 'react';
-
+import { useReactiveVar } from '@apollo/client';
+import { searchUsersQueryVar } from 'src/graphql/cahce';
 import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -14,7 +15,8 @@ import {
   TablePagination,
   TableRow,
   Typography,
-  IconButton
+  IconButton,
+  Alert
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import getInitials from 'src/utils/getInitials';
@@ -23,6 +25,7 @@ interface Props {
   users?: [];
 }
 const UsersListResults = ({ users, ...rest }: Props) => {
+  const searchUsersQuery = useReactiveVar(searchUsersQueryVar);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
 
@@ -45,12 +48,13 @@ const UsersListResults = ({ users, ...rest }: Props) => {
                 <TableCell>Uživatelské jméno</TableCell>
                 <TableCell>Útvar</TableCell>
                 <TableCell>Číslo</TableCell>
+                <TableCell>Role</TableCell>
                 <TableCell>Datum registrace</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {users ? (
+              {users && users.length !== 0 ? (
                 users.slice(0, limit).map((user: any) => (
                   <TableRow key={user.id}>
                     <TableCell>
@@ -71,18 +75,28 @@ const UsersListResults = ({ users, ...rest }: Props) => {
                     <TableCell>{user.userName}</TableCell>
                     <TableCell>{user.utvar}</TableCell>
                     <TableCell>{user.phone}</TableCell>
+                    <TableCell>{user.role.name}</TableCell>
                     <TableCell>
                       {moment(user.createdAt).format('DD/MM/YYYY')}
                     </TableCell>
                     <TableCell>
-                      <IconButton component={RouterLink} to="/app/account">
+                      <IconButton
+                        component={RouterLink}
+                        to={`/app/account/${user.id}`}
+                      >
                         <SettingsIcon />
                       </IconButton>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
-                <TableRow>Zadni uzivatele</TableRow>
+                <TableRow>
+                  <TableCell colSpan={12} align="center">
+                    <Alert variant="outlined" severity="info">
+                      {`Uživatel ${searchUsersQuery} nenalezen`}
+                    </Alert>
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>

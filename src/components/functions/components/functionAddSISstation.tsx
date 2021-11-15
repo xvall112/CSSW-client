@@ -1,4 +1,5 @@
 import React from 'react';
+import { useMutation, gql } from '@apollo/client';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { Formik, FieldArray, getIn, Form } from 'formik';
@@ -6,29 +7,49 @@ import { Box, Button, TextField, Stack } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
 
+const ADD_STATION_TO_SIS = gql`
+  mutation addStationToSISMutation($input: addStationToSISinput!) {
+    addStationToSIS(input: $input) {
+      name
+    }
+  }
+`;
 const FunctionAddSISstation = () => {
+  const [addStationToSIS, { loading, error }] = useMutation(ADD_STATION_TO_SIS);
   /*  const navigate = useNavigate(); */
+
   return (
     <Box sx={{ height: '100%' }}>
       <Formik
         initialValues={{
+          station: '222',
           stations: [''],
           cisloPozadavku: ''
         }}
         validationSchema={Yup.object().shape({
           stations: Yup.array().of(
-            Yup.number().required('Vyplňte číslo stanice')
+            Yup.string().required('Vyplňte číslo stanice')
           ),
 
           cisloPozadavku: Yup.string()
             .max(255)
             .required('Vyplňte číslo požadavku')
         })}
-        onSubmit={(values, formik) => {
+        onSubmit={async (values, formik) => {
           setTimeout(() => {
             alert(JSON.stringify(values, null, 2));
             formik.resetForm();
           }, 500);
+          await values.stations.map(async (station) => {
+            await addStationToSIS({
+              variables: {
+                input: {
+                  stationNumber: station,
+                  requirement: values.cisloPozadavku
+                }
+              }
+            });
+          });
         }}
       >
         {({
@@ -89,7 +110,7 @@ const FunctionAddSISstation = () => {
                             name={cisloStanice}
                             onBlur={handleBlur}
                             onChange={handleChange}
-                            type="number"
+                            type="text"
                             value={station}
                             variant="outlined"
                           />
@@ -115,7 +136,7 @@ const FunctionAddSISstation = () => {
 
             <Button
               color="primary"
-              disabled={isSubmitting}
+              disabled={isSubmitting || loading}
               fullWidth
               size="large"
               type="submit"

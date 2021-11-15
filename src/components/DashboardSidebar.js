@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { useReactiveVar } from '@apollo/client';
+import { loggedUserVar } from 'src/graphql/cahce';
 import PropTypes from 'prop-types';
+import getInitials from 'src/utils/getInitials';
 import {
   Avatar,
   Box,
@@ -21,9 +24,7 @@ import {
 import NavItem from './NavItem';
 
 const user = {
-  avatar: '/static/images/avatars/avatar_3.png',
-  jobTitle: 'Software manager',
-  name: 'Jan Luka'
+  avatar: '/static/images/avatars/avatar_3.png'
 };
 
 const items = [
@@ -38,7 +39,7 @@ const items = [
     title: 'Funkce'
   },
   {
-    href: '/app/software',
+    href: '/app/licenses',
     icon: ShoppingBagIcon,
     title: 'Software'
   },
@@ -46,16 +47,30 @@ const items = [
     href: '/app/users',
     icon: UsersIcon,
     title: 'Účty'
+  }
+];
+
+const userItems = [
+  {
+    href: '/app/dashboard',
+    icon: BarChartIcon,
+    title: 'Dashboard'
   },
   {
-    href: '/login',
-    icon: LockIcon,
-    title: 'Login'
+    href: '/app/functions',
+    icon: SettingsIcon,
+    title: 'Funkce'
+  },
+  {
+    href: '/app/licenses',
+    icon: ShoppingBagIcon,
+    title: 'Software'
   }
 ];
 
 const DashboardSidebar = ({ onMobileClose, openMobile }) => {
   const location = useLocation();
+  const logedUser = useReactiveVar(loggedUserVar);
 
   useEffect(() => {
     if (openMobile && onMobileClose) {
@@ -81,25 +96,27 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
       >
         <Avatar
           component={RouterLink}
-          src={user.avatar}
+          src={user.avatarUrl}
           sx={{
             cursor: 'pointer',
             width: 64,
             height: 64
           }}
-          to="/app/account"
-        />
+          to={`/app/account/${logedUser && logedUser.id}`}
+        >
+          {getInitials(logedUser.name)}
+        </Avatar>
         <Typography color="textPrimary" variant="h5">
-          {user.name}
+          {logedUser && logedUser.name}
         </Typography>
         <Typography color="textSecondary" variant="body2">
-          {user.jobTitle}
+          {logedUser && logedUser.userName}
         </Typography>
       </Box>
       <Divider />
       <Box sx={{ p: 2 }}>
         <List>
-          {items.map((item) => (
+          {(logedUser.role === 'user' ? userItems : items).map((item) => (
             <NavItem
               href={item.href}
               key={item.title}

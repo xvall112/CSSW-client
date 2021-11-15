@@ -1,26 +1,41 @@
-import { Box, Container, Skeleton, Stack } from '@material-ui/core';
+import { useEffect } from 'react';
+import { Box, Container } from '@material-ui/core';
 import UserListResults from 'src/components/users/UsersListResults';
 import UserListToolbar from 'src/components/users/UsersListToolbar';
 import SEO from '../components/seo';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, gql, useReactiveVar } from '@apollo/client';
+import { searchUsersQueryVar } from 'src/graphql/cahce';
 //components
 import Loading from '../components/Loading';
 
-const USERS = gql`
-  query GetUsers {
-    users {
-      id
-      utvar
-      createdAt
-      userName
+export const SEARCH_USERS = gql`
+  query GetSearchUsers($contains: String) {
+    searchUsers(contains: $contains) {
       name
+      utvar
+      id
+      userName
       phone
+      role {
+        name
+      }
+      createdAt
     }
   }
 `;
 
 const UsersList = () => {
-  const { loading, error, data } = useQuery(USERS);
+  useEffect(() => {
+    searchUsersQueryVar('');
+  }, []);
+
+  const searchUsersQuery = useReactiveVar(searchUsersQueryVar);
+
+  const { loading, error, data } = useQuery(SEARCH_USERS, {
+    variables: {
+      contains: searchUsersQuery
+    }
+  });
 
   if (error) return `Error! ${error.message}`;
   return (
@@ -36,7 +51,11 @@ const UsersList = () => {
         <Container maxWidth={false}>
           <UserListToolbar />
           <Box sx={{ pt: 3 }}>
-            {loading ? <Loading /> : <UserListResults users={data.users} />}
+            {loading ? (
+              <Loading />
+            ) : (
+              <UserListResults users={data.searchUsers} />
+            )}
           </Box>
         </Container>
       </Box>

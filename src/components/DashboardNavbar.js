@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import Logout from 'src/components/account/Logout';
 import PropTypes from 'prop-types';
 import {
   AppBar,
@@ -40,20 +41,19 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
           </Grid>
         </RouterLink>
         <Box sx={{ flexGrow: 1 }} />
-        <Hidden lgDown>
-          <IconButton color="inherit">
-            <Badge
-              badgeContent={notifications.length}
-              color="primary"
-              variant="dot"
-            >
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <IconButton color="inherit">
-            <InputIcon />
-          </IconButton>
-        </Hidden>
+
+        <IconButton color="inherit">
+          <Badge
+            badgeContent={notifications.length}
+            color="primary"
+            variant="dot"
+          >
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        {/*  menu na odhlaseni */}
+        <Logout />
+
         <Hidden lgUp>
           <IconButton color="inherit" onClick={onMobileNavOpen}>
             <MenuIcon />

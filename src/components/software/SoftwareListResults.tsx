@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
@@ -10,18 +10,18 @@ import {
   TableCell,
   TableHead,
   TablePagination,
-  TableRow
+  TableRow,
+  Chip
 } from '@material-ui/core';
-import getInitials from 'src/utils/getInitials';
 
 interface Props {
-  licences?: any;
+  licenses?: any;
 }
-const SoftwareListResults = ({ licences, ...rest }: Props) => {
+const SoftwareListResults = ({ licenses, ...rest }: Props) => {
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
-
+  console.log('Software list result', licenses);
   /*  const handleSelectAll = (event) => {
     let newSelectedCustomerIds;
 
@@ -76,44 +76,53 @@ const SoftwareListResults = ({ licences, ...rest }: Props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>KČM</TableCell>
-                <TableCell>Název</TableCell>
-                <TableCell>Part Number</TableCell>
-                <TableCell>Název produktu</TableCell>
-                <TableCell>Software Assurance</TableCell>
-                <TableCell>Platnost SA</TableCell>
                 <TableCell>Evidenční číslo</TableCell>
+                <TableCell>Název</TableCell>
+                <TableCell>Název</TableCell>
                 <TableCell>Smlouva</TableCell>
+                <TableCell>Stav</TableCell>
                 <TableCell>Stanice</TableCell>
                 <TableCell>Požadavek</TableCell>
-                <TableCell>Datum změny</TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {licences.slice(0, limit).map((item: any) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.kcm}</TableCell>
-                  <TableCell>{item.nazev}</TableCell>
-                  <TableCell>{item.partNumber}</TableCell>
-                  <TableCell>{item.nameProduct}</TableCell>
-                  <TableCell>{item.SA}</TableCell>
-                  <TableCell>{item.SAplatnost}</TableCell>
-                  <TableCell>{item.evidenceNumber}</TableCell>
-                  <TableCell>{item.smlouva}</TableCell>
-                  <TableCell>{item.station}</TableCell>
-                  <TableCell>{item.pozadavek}</TableCell>
-                  <TableCell>
-                    {moment(item.dateOfChange).format('DD/MM/YYYY')}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {licenses
+                .slice(page * limit, page * limit + limit)
+                .map((item: any) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.evidenceNumber}</TableCell>
+                    <TableCell>{item.software.name}</TableCell>
+                    <TableCell>{item.software.nameOfProduct}</TableCell>
+                    <TableCell>{item.contract.contractNumber}</TableCell>
+                    <TableCell>
+                      <Chip
+                        variant="outlined"
+                        color={item.isAssigned ? 'warning' : 'success'}
+                        size="small"
+                        label={item.isAssigned ? 'přidělena' : 'volná'}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {item.isAssigned && item.licenseEvents[0].station}
+                    </TableCell>
+                    <TableCell>
+                      {item.isAssigned && item.licenseEvents[0].ticketId}
+                    </TableCell>
+                    <TableCell>
+                      <RouterLink to={`/app/licenses/${item.id}`}>
+                        detail
+                      </RouterLink>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </Box>
       </PerfectScrollbar>
       <TablePagination
         component="div"
-        count={licences.length}
+        count={licenses.length}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleLimitChange}
         page={page}
