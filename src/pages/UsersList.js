@@ -9,31 +9,36 @@ import { searchUsersQueryVar } from 'src/graphql/cahce';
 import Loading from '../components/Loading';
 
 export const SEARCH_USERS = gql`
-  query GetSearchUsers($contains: String) {
-    searchUsers(contains: $contains) {
-      name
-      utvar
-      id
-      userName
-      phone
-      role {
+  query GetSearchUsers($contains: String, $limit: Int, $offset: Int) {
+    searchUsers(contains: $contains, limit: $limit, offset: $offset) {
+      countUsers
+      users {
         name
+        utvar
+        id
+        userName
+        phone
+        role {
+          name
+        }
+        createdAt
       }
-      createdAt
     }
   }
 `;
 
 const UsersList = () => {
   useEffect(() => {
-    searchUsersQueryVar('');
+    /*  searchUsersQueryVar(''); */
   }, []);
 
   const searchUsersQuery = useReactiveVar(searchUsersQueryVar);
 
   const { loading, error, data } = useQuery(SEARCH_USERS, {
     variables: {
-      contains: searchUsersQuery
+      contains: searchUsersQuery.name,
+      limit: searchUsersQuery.limit,
+      offset: searchUsersQuery.offset
     }
   });
 
@@ -54,7 +59,10 @@ const UsersList = () => {
             {loading ? (
               <Loading />
             ) : (
-              <UserListResults users={data.searchUsers} />
+              <UserListResults
+                users={data.searchUsers.users}
+                countUsers={data.searchUsers.countUsers}
+              />
             )}
           </Box>
         </Container>

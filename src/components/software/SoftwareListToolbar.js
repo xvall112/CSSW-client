@@ -7,13 +7,24 @@ import {
   SvgIcon,
   Stack
 } from '@material-ui/core';
+import { debounce } from 'debounce';
 import { useReactiveVar } from '@apollo/client';
 import { Search as SearchIcon } from 'react-feather';
 import SoftwareImport from './SoftwareImport';
-import { loggedUserVar } from 'src/graphql/cahce';
+import { loggedUserVar, searchLicensesQueryVar } from 'src/graphql/cahce';
 
 const SoftwareListToolbar = (props) => {
   const loggedUser = useReactiveVar(loggedUserVar);
+  const searchLicensesQuery = useReactiveVar(searchLicensesQueryVar);
+  const handleChange = debounce((event) => {
+    searchLicensesQueryVar({
+      name: event.target.value,
+      limit: searchLicensesQuery.limit,
+      offset: 0,
+      pageNumber: 0
+    });
+  }, 500);
+
   return (
     <Box {...props}>
       <Box sx={{ mt: 3 }}>
@@ -26,6 +37,7 @@ const SoftwareListToolbar = (props) => {
             >
               <Box sx={{ minWidth: 500 }}>
                 <TextField
+                  onChange={(event) => handleChange(event)}
                   fullWidth
                   InputProps={{
                     startAdornment: (
@@ -40,8 +52,9 @@ const SoftwareListToolbar = (props) => {
                   variant="outlined"
                 />
               </Box>
-              {(loggedUser.role === 'admin' ||
-                loggedUser.role === 'superAdmin') && <SoftwareImport />}
+              {(loggedUser.role === 'admin' || loggedUser.role === 'owner') && (
+                <SoftwareImport />
+              )}
             </Stack>
           </CardContent>
         </Card>

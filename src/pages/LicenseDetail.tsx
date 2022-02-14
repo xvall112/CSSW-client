@@ -5,12 +5,13 @@ import { useQuery, gql } from '@apollo/client';
 //components
 import LicenseResult from 'src/components/licenses/LicenseResult';
 //material UI
-import { Box, Container, Grid, Skeleton, Stack } from '@material-ui/core';
+import { Box, Container, Skeleton } from '@material-ui/core';
 
 export const LICENSE = gql`
   query oneLicense($id: ID!) {
     oneLicense(id: $id) {
       id
+      softwareAssurance
       software {
         name
         nameOfProduct
@@ -38,7 +39,9 @@ export const LICENSE = gql`
         LicenseEventType {
           value
         }
-        station
+        station {
+          name
+        }
         ticketId
       }
     }

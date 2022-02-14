@@ -1,8 +1,14 @@
 import React from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
 
-const LicenceNumbers = (props: any) => {
-  const { celkem, volne, obsazene, dluh } = props.data;
+interface Props {
+  pridelene: number;
+  volne: number;
+  celkem: number;
+}
+const LicenceNumbers = ({ pridelene, volne, celkem }: Props) => {
+  const dluh = 0;
+
   return (
     <Grid item xs={12}>
       <Grid container alignItems="center" item xs={12}>
@@ -40,7 +46,7 @@ const LicenceNumbers = (props: any) => {
         <Grid item>
           <Typography color="textSecondary" gutterBottom variant="button">
             <Box sx={{ color: 'warning.light', fontWeight: 'bold' }}>
-              {obsazene}
+              {pridelene}
             </Box>
           </Typography>
         </Grid>

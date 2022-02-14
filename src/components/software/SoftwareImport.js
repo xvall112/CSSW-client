@@ -17,9 +17,9 @@ import { useDropzone } from 'react-dropzone';
 import XLSX from 'xlsx';
 
 const CREATE_LICENCE = gql`
-  mutation CreateLicenceMutation($input: [CreateLicenceInput]) {
-    createLicence(input: $input) {
-      name
+  mutation CreateLicenceMutation($input: [CreateLicenseInput!]) {
+    createLicense(input: $input) {
+      note
     }
   }
 `;
@@ -54,14 +54,17 @@ const rejectStyle = {
 
 const SoftwareImport = () => {
   //mutation
-  const [createLicence, { data, loading, error }] = useMutation(
+  const [createLicense, { data, loading, error }] = useMutation(
     CREATE_LICENCE,
     {
-      /* refetchQueries: [{ query:  }], */
-      awaitRefetchQueries: true,
       onCompleted() {
         handleSuccessAlertOpen();
-      }
+      },
+      refetchQueries: [
+        'GetLicenses',
+        'allSoftware' // Query name
+      ],
+      awaitRefetchQueries: true
     }
   );
   const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
@@ -119,16 +122,19 @@ const SoftwareImport = () => {
         //convert array to object
         await jsonFromExcel.forEach(async (row, index) => {
           let rowData = {};
+
           await row.forEach((element, index) => {
             rowData[headers[index]] = element;
           });
+
           await data.push(rowData);
         });
-        console.log('excel data:', data);
-        //vytvoreni zaznamu v databazi
-        await createLicence({
+
+        console.log('data', data);
+
+        await createLicense({
           variables: {
-            input: data
+            input: data.slice(0, 500)
           }
         });
       };

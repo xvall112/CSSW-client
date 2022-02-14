@@ -41,7 +41,7 @@ const Login = () => {
 
   const [loginUser, { data, loading, error }] = useMutation(USER_LOGIN, {
     onCompleted(data) {
-      console.log(data);
+      //po uspesnem prihlaseni ulozeni udaju o uzivateli do localStorge
       auth.login(
         data.login.id,
         data.login.token,
@@ -61,7 +61,6 @@ const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       await loginUser({
         variables: {
           userName: values.userName,

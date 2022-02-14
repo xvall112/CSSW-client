@@ -1,13 +1,69 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { Formik, FieldArray, getIn, Form } from 'formik';
-import { Box, Button, TextField, Stack } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  TextField,
+  Stack,
+  CircularProgress
+} from '@material-ui/core';
+import { debounce } from 'debounce';
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
+import { toast } from 'react-toastify';
+import InputAdornment from '@mui/material/InputAdornment';
+import DoneIcon from '@material-ui/icons/Done';
+import CancelIcon from '@material-ui/icons/Cancel';
 
+interface Stanice {
+  name: number;
+}
+//mutace na odstraneni stanice ze SIS
+export const REMOVE_STATION = gql`
+  mutation deleteStationMutation($stations: [Int]!, $requirement: String!) {
+    deleteStation(stations: $stations, requirement: $requirement) {
+      name
+    }
+  }
+`;
+
+//query na nacteni vsech stanic v SIS
+export const ALL_STATIONS = gql`
+  query allStations {
+    allStations {
+      name
+    }
+  }
+`;
 const FunctionRemoveSISstation = () => {
-  /*  const navigate = useNavigate(); */
+  const {
+    data: dataAllStation,
+    loading: loadingAllStation,
+    error: errorAllStation
+  } = useQuery(ALL_STATIONS);
+
+  const [removeStations, { data, loading, error }] = useMutation(
+    REMOVE_STATION,
+    {
+      onCompleted(data) {
+        toast.success(`Stanice byly úspěšně odebrány`);
+      },
+      onError(error) {
+        toast.error(`Nepodařilo se odebrat stanice: ${error.message}`, {});
+      },
+      refetchQueries: [
+        'GetLicenses',
+        'GetStationSoftware',
+        'getStationLicenses',
+        'allSoftware',
+        'allStations'
+      ],
+      awaitRefetchQueries: true
+    }
+  );
+
   return (
     <Box sx={{ height: '100%' }}>
       <Formik
@@ -24,11 +80,14 @@ const FunctionRemoveSISstation = () => {
             .max(255)
             .required('Vyplňte číslo požadavku')
         })}
-        onSubmit={(values, formik) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            formik.resetForm();
-          }, 500);
+        onSubmit={async (values, formik) => {
+          await removeStations({
+            variables: {
+              stations: values.stations,
+              requirement: values.cisloPozadavku
+            }
+          });
+          await formik.resetForm();
         }}
       >
         {({
@@ -92,6 +151,29 @@ const FunctionRemoveSISstation = () => {
                             type="number"
                             value={station}
                             variant="outlined"
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  {/* overeni zda je stanice v SIS */}
+                                  <>
+                                    {touchedCisloStanice &&
+                                      dataAllStation &&
+                                      (dataAllStation.allStations.some(
+                                        (Astation: Stanice) => {
+                                          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                                          return (
+                                            Astation.name === parseInt(station)
+                                          );
+                                        }
+                                      ) ? (
+                                        <DoneIcon color="success" />
+                                      ) : (
+                                        <CancelIcon color="error" />
+                                      ))}
+                                  </>
+                                </InputAdornment>
+                              )
+                            }}
                           />
                           {index !== 0 && (
                             <Button color="error" onClick={() => remove(index)}>

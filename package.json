@@ -33,6 +33,7 @@
     "@material-ui/icons": "^5.0.0-alpha.28",
     "@material-ui/styles": "^4.10.0",
     "@mui/material": "^5.0.1",
+    "@types/debounce": "^1.2.1",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.6.1",
     "@types/react": "^17.0.17",

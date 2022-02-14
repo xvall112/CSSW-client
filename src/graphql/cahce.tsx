@@ -9,6 +9,11 @@ export const cache = new InMemoryCache({
             return searchUsersQueryVar();
           }
         },
+        searchLicensesQuery: {
+          read() {
+            return searchLicensesQueryVar();
+          }
+        },
         isLoggedIn: {
           read() {
             return isLoggedInVar();
@@ -29,7 +34,18 @@ export const cache = new InMemoryCache({
   }
 });
 
-export const searchUsersQueryVar = makeVar('');
+export const searchUsersQueryVar = makeVar({
+  name: '',
+  limit: 25,
+  offset: 0,
+  pageNumber: 0
+});
+export const searchLicensesQueryVar = makeVar({
+  name: '',
+  limit: 25,
+  offset: 0,
+  pageNumber: 0
+});
 export const tokenVar = makeVar(null);
 export const isLoggedInVar = makeVar(!!tokenVar);
 export const loggedUserVar = makeVar(null);

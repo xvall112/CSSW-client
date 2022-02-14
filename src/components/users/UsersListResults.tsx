@@ -23,18 +23,27 @@ import getInitials from 'src/utils/getInitials';
 
 interface Props {
   users?: [];
+  countUsers?: number;
 }
-const UsersListResults = ({ users, ...rest }: Props) => {
+const UsersListResults = ({ users, countUsers, ...rest }: Props) => {
   const searchUsersQuery = useReactiveVar(searchUsersQueryVar);
-  const [limit, setLimit] = useState(10);
-  const [page, setPage] = useState(0);
 
   const handleLimitChange = (event?: any) => {
-    setLimit(event.target.value);
+    searchUsersQueryVar({
+      name: searchUsersQuery.name,
+      limit: event.target.value,
+      offset: 0,
+      pageNumber: 0
+    });
   };
 
   const handlePageChange = (event?: any, newPage?: any) => {
-    setPage(newPage);
+    searchUsersQueryVar({
+      name: searchUsersQuery.name,
+      limit: searchUsersQuery.limit,
+      offset: newPage * searchUsersQuery.limit,
+      pageNumber: newPage
+    });
   };
 
   return (
@@ -55,7 +64,7 @@ const UsersListResults = ({ users, ...rest }: Props) => {
             </TableHead>
             <TableBody>
               {users && users.length !== 0 ? (
-                users.slice(0, limit).map((user: any) => (
+                users.map((user: any) => (
                   <TableRow key={user.id}>
                     <TableCell>
                       <Box
@@ -104,11 +113,11 @@ const UsersListResults = ({ users, ...rest }: Props) => {
       </PerfectScrollbar>
       <TablePagination
         component="div"
-        count={users ? users.length : 0}
+        count={countUsers ? countUsers : 0}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleLimitChange}
-        page={page}
-        rowsPerPage={limit}
+        page={searchUsersQuery.pageNumber}
+        rowsPerPage={searchUsersQuery.limit}
         rowsPerPageOptions={[5, 10, 25]}
       />
     </Card>

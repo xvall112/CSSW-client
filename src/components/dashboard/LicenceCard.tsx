@@ -4,65 +4,84 @@ import EmptyLicenceGraph from './EmptyLicenceGraph';
 import ComputerIcon from '@material-ui/icons/Computer';
 
 interface Props {
-  props: any;
-  licence: any;
+  software: any;
 }
 
-const LicenceCard = (props: Props) => {
-  const { licence } = props;
+const LicenceCard = ({ software }: Props) => {
   return (
     <Grid container direction="row" spacing={2}>
-      {licence.map((item: any, index: any) => (
-        <Grid item xs={12} md={4} key={index}>
-          <Card sx={{ height: '100%' }} {...props} key={item.title}>
-            <CardContent>
-              <Grid item xs={12}>
-                <Grid
-                  container
-                  spacing={3}
-                  sx={{ justifyContent: 'space-around' }}
-                >
-                  <Grid item xs={9}>
-                    <Typography color="textSecondary" gutterBottom variant="h6">
-                      Licence
-                    </Typography>
-                    <Typography
-                      color="textPrimary"
-                      variant="h3"
-                      sx={{ textTransform: 'uppercase' }}
-                    >
-                      {item.title}
-                    </Typography>
-                  </Grid>
+      {software.map((item: any) => {
+        const celkem = item.licenses.length;
+        const volne = item.licenses.filter(
+          (item: any) => item.isAssigned === false
+        ).length;
+        const pridelene = item.licenses.filter(
+          (item: any) => item.isAssigned === true
+        ).length;
+        return (
+          <Grid item xs={12} md={4} key={item.id}>
+            <Card sx={{ height: '100%' }}>
+              <CardContent>
+                <Grid item xs={12}>
                   <Grid
-                    item
-                    xs={3}
-                    sx={{ display: 'flex', justifyContent: 'center' }}
+                    container
+                    spacing={3}
+                    sx={{ justifyContent: 'space-around' }}
                   >
-                    <Avatar
-                      sx={{
-                        backgroundColor: 'primary.main',
-                        height: 56,
-                        width: 56
-                      }}
+                    <Grid item xs={9}>
+                      <Typography
+                        color="textSecondary"
+                        gutterBottom
+                        variant="h6"
+                      >
+                        Licence
+                      </Typography>
+                      <Typography
+                        color="textPrimary"
+                        variant="h3"
+                        sx={{ textTransform: 'uppercase' }}
+                      >
+                        {item.name}
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={3}
+                      sx={{ display: 'flex', justifyContent: 'center' }}
                     >
-                      <ComputerIcon color="secondary" />
-                    </Avatar>
+                      <Avatar
+                        sx={{
+                          backgroundColor: 'primary.main',
+                          height: 56,
+                          width: 56
+                        }}
+                      >
+                        <ComputerIcon color="secondary" />
+                      </Avatar>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-              <Grid container alignItems="center" item xs={12}>
-                <Grid item xs={12} md={6}>
-                  <LicenceNumbers data={item.data} />
+                <Grid container alignItems="center" item xs={12}>
+                  <Grid item xs={12} md={6}>
+                    <LicenceNumbers
+                      celkem={celkem}
+                      pridelene={pridelene}
+                      volne={volne}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <EmptyLicenceGraph
+                      celkem={celkem}
+                      pridelene={pridelene}
+                      volne={volne}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <EmptyLicenceGraph data={item.data} />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
+              </CardContent>
+            </Card>
+          </Grid>
+        );
+      })}
     </Grid>
   );
 };

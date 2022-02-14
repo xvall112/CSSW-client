@@ -47,9 +47,14 @@ interface Props {
   data: any;
 }
 const LicenseResult = ({ data }: Props): JSX.Element => {
-  console.log(data);
-  const { evidenceNumber, software, contract, isAssigned, licenseEvents } =
-    data.oneLicense;
+  const {
+    softwareAssurance,
+    evidenceNumber,
+    software,
+    contract,
+    isAssigned,
+    licenseEvents
+  } = data.oneLicense;
 
   function createData(name: string, value: any) {
     return { name, value };
@@ -66,8 +71,8 @@ const LicenseResult = ({ data }: Props): JSX.Element => {
     createData('Číslo smlouvy', contract.contractNumber),
     createData(
       'Životní cyklus',
-      contract.dateOfLifeCyclemoment &&
-        moment(contract.dateOfLifeCyclemoment).format('DD/MM/YYYY')
+      contract.dateOfLifeCycle &&
+        moment(contract.dateOfLifeCycle).format('DD/MM/YYYY')
     ),
     createData(
       'Platnost SA',
@@ -79,6 +84,11 @@ const LicenseResult = ({ data }: Props): JSX.Element => {
         moment(contract.datumUkonceniHlavniFazeTechnickePodpory).format(
           'DD/MM/YYYY'
         )
+    ),
+    createData(
+      'Rozšířená podpora do',
+      contract.datumUkonceniRozsirenePodpory &&
+        moment(contract.datumUkonceniRozsirenePodpory).format('DD/MM/YYYY')
     ),
     createData(
       'Podpora Aktualizace SP1 do',
@@ -147,6 +157,24 @@ const LicenseResult = ({ data }: Props): JSX.Element => {
                     />
                   </Box>
                 </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <Stack direction="row" spacing={1}>
+                  <Typography
+                    color="textSecondary"
+                    gutterBottom
+                    variant="body1"
+                  >
+                    Software Assurance:
+                  </Typography>
+                  <Typography
+                    color="textSecondary"
+                    gutterBottom
+                    variant="body1"
+                  >
+                    {softwareAssurance === true ? 'Ano' : 'Ne'}
+                  </Typography>
+                </Stack>
               </Grid>
             </CardContent>
           </Card>
@@ -222,13 +250,17 @@ const LicenseResult = ({ data }: Props): JSX.Element => {
           </Card>
         </Grid>
         <Grid item xs={12}>
-          <Card sx={{ height: '100%', width: '100%' }}>
+          <Card sx={{ maxHeight: '50vh', width: '100%', overflow: 'scroll' }}>
             <CardContent>
               <Grid item xs={12}>
                 <Typography
                   color="textPrimary"
                   variant="h6"
-                  sx={{ textTransform: 'uppercase' }}
+                  sx={{
+                    textTransform: 'uppercase',
+                    position: 'sticky',
+                    top: '20px'
+                  }}
                 >
                   Historie licence
                 </Typography>
@@ -255,7 +287,7 @@ const LicenseResult = ({ data }: Props): JSX.Element => {
                             {/*  <Plus /> */}
                             {row.LicenseEventType.value}
                           </StyledTableCell>
-                          <StyledTableCell>{row.station}</StyledTableCell>
+                          <StyledTableCell>{row.station.name}</StyledTableCell>
                           <StyledTableCell>{row.ticketId}</StyledTableCell>
                           <StyledTableCell>
                             {moment(row.assignedAt).format('DD/MM/YYYY')}

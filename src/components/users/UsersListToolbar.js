@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import {
   Box,
   Card,
@@ -7,17 +6,21 @@ import {
   InputAdornment,
   SvgIcon
 } from '@material-ui/core';
+import { useReactiveVar } from '@apollo/client';
 import { Search as SearchIcon } from 'react-feather';
 import AddUserForm from './AddUserForm';
 import { debounce } from 'debounce';
 import { searchUsersQueryVar } from 'src/graphql/cahce';
 
 const UsersListToolbar = (props) => {
-  useEffect(() => {
-    searchUsersQueryVar('');
-  }, []);
+  const searchUsersQuery = useReactiveVar(searchUsersQueryVar);
   const handleChange = debounce((event) => {
-    searchUsersQueryVar(event.target.value);
+    searchUsersQueryVar({
+      name: event.target.value,
+      limit: searchUsersQuery.limit,
+      offset: 0,
+      pageNumber: 0
+    });
   }, 500);
   return (
     <Box {...props}>

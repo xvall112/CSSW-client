@@ -51,6 +51,17 @@ const AddUserForm = () => {
   };
 
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER, {
+    onCompleted(data) {
+      toast.success(`Uživatel ${data.createUser.name} byl úspěšně přidán`, {});
+      formik.resetForm();
+      handleClose();
+    },
+    onError(error) {
+      toast.error(
+        `Uživatele ${data.createUser.name} se nepodařilo vytvořit: ${error.message}`,
+        {}
+      );
+    },
     refetchQueries: [
       'GetSearchUsers' // Query name
     ]
@@ -72,9 +83,6 @@ const AddUserForm = () => {
           input: { ...values, role: parseInt(values.role) }
         }
       });
-      await formik.resetForm();
-      await handleClose();
-      await toast.success(`Uživatel ${values.name} byl úspěšně přidán`, {});
     }
   });
 

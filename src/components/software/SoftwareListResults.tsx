@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useReactiveVar } from '@apollo/client';
 import { Link as RouterLink } from 'react-router-dom';
 import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { searchLicensesQueryVar } from 'src/graphql/cahce';
 import {
   Box,
   Card,
@@ -16,57 +18,28 @@ import {
 
 interface Props {
   licenses?: any;
+  countLicenses?: number;
 }
-const SoftwareListResults = ({ licenses, ...rest }: Props) => {
-  const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
-  const [limit, setLimit] = useState(10);
-  const [page, setPage] = useState(0);
-  console.log('Software list result', licenses);
-  /*  const handleSelectAll = (event) => {
-    let newSelectedCustomerIds;
+const SoftwareListResults = ({ licenses, countLicenses, ...rest }: Props) => {
+  const searchLicensesQuery = useReactiveVar(searchLicensesQueryVar);
 
-    if (event.target.checked) {
-      newSelectedCustomerIds = customers.map((customer) => customer.id);
-    } else {
-      newSelectedCustomerIds = [];
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
-  };
-
-  const handleSelectOne = (event, id) => {
-    const selectedIndex = selectedCustomerIds.indexOf(id);
-    let newSelectedCustomerIds = [];
-
-    if (selectedIndex === -1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(
-        selectedCustomerIds,
-        id
-      );
-    } else if (selectedIndex === 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(
-        selectedCustomerIds.slice(1)
-      );
-    } else if (selectedIndex === selectedCustomerIds.length - 1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(
-        selectedCustomerIds.slice(0, -1)
-      );
-    } else if (selectedIndex > 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(
-        selectedCustomerIds.slice(0, selectedIndex),
-        selectedCustomerIds.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
-  }; */
-
-  const handleLimitChange = (event?: any) => {
-    setLimit(event.target.value);
+  //nastaveni pocet vysledku na stranku
+  const handleLimitChange = (event: any) => {
+    searchLicensesQueryVar({
+      name: searchLicensesQuery.name,
+      limit: event.target.value,
+      offset: 0,
+      pageNumber: 0
+    });
   };
 
   const handlePageChange = (event?: any, newPage?: any) => {
-    setPage(newPage);
+    searchLicensesQueryVar({
+      name: searchLicensesQuery.name,
+      limit: searchLicensesQuery.limit,
+      offset: newPage * searchLicensesQuery.limit,
+      pageNumber: newPage
+    });
   };
 
   return (
@@ -88,7 +61,7 @@ const SoftwareListResults = ({ licenses, ...rest }: Props) => {
             </TableHead>
             <TableBody>
               {licenses
-                .slice(page * limit, page * limit + limit)
+                /* .slice(page * limit, page * limit + limit) */
                 .map((item: any) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.evidenceNumber}</TableCell>
@@ -98,16 +71,14 @@ const SoftwareListResults = ({ licenses, ...rest }: Props) => {
                     <TableCell>
                       <Chip
                         variant="outlined"
-                        color={item.isAssigned ? 'warning' : 'success'}
+                        color={item.station ? 'warning' : 'success'}
                         size="small"
-                        label={item.isAssigned ? 'přidělena' : 'volná'}
+                        label={item.station ? 'přidělena' : 'volná'}
                       />
                     </TableCell>
+                    <TableCell>{item.station && item.station.name}</TableCell>
                     <TableCell>
-                      {item.isAssigned && item.licenseEvents[0].station}
-                    </TableCell>
-                    <TableCell>
-                      {item.isAssigned && item.licenseEvents[0].ticketId}
+                      {item.station && item.licenseEvents[0].ticketId}
                     </TableCell>
                     <TableCell>
                       <RouterLink to={`/app/licenses/${item.id}`}>
@@ -122,11 +93,11 @@ const SoftwareListResults = ({ licenses, ...rest }: Props) => {
       </PerfectScrollbar>
       <TablePagination
         component="div"
-        count={licenses.length}
+        count={countLicenses ? countLicenses : 0}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleLimitChange}
-        page={page}
-        rowsPerPage={limit}
+        page={searchLicensesQuery.pageNumber}
+        rowsPerPage={searchLicensesQuery.limit}
         rowsPerPageOptions={[5, 10, 25]}
       />
     </Card>

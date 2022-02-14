@@ -7,14 +7,19 @@ import {
   useTheme
 } from '@material-ui/core';
 
-const EmptyLicenceGraph = (props: any) => {
-  const { volne, obsazene, celkem } = props.data;
+interface Props {
+  pridelene: number;
+  volne: number;
+  celkem: number;
+}
+
+const EmptyLicenceGraph = ({ pridelene, volne, celkem }: Props) => {
   const theme = useTheme();
 
   const volnePercent = (volne / celkem) * 100;
-  const obsazenePercent = (obsazene / celkem) * 100;
+  const obsazenePercent = (pridelene / celkem) * 100;
 
-  const data = {
+  const datas = {
     datasets: [
       {
         data: [volnePercent, obsazenePercent],
@@ -31,7 +36,6 @@ const EmptyLicenceGraph = (props: any) => {
   };
 
   const options = {
-    animation: true,
     cutoutPercentage: 80,
     layout: { padding: 0 },
     legend: {
@@ -73,7 +77,7 @@ const EmptyLicenceGraph = (props: any) => {
           position: 'relative'
         }}
       >
-        <Doughnut data={data} options={options} />
+        <Doughnut data={datas} options={options} />
       </Box>
       <Box
         sx={{
@@ -93,7 +97,7 @@ const EmptyLicenceGraph = (props: any) => {
               {title}
             </Typography>
             <Typography style={{ color }} variant="body1">
-              {value}%
+              {value.toFixed(1)}%
             </Typography>
           </Box>
         ))}

@@ -8,7 +8,6 @@ import { gql, useMutation } from '@apollo/client';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { toast } from 'react-toastify';
-import { SEARCH_USERS } from 'src/pages/UsersList';
 
 const DELETE_USER = gql`
   mutation DeleteUserMutation($id: ID!) {
@@ -29,7 +28,18 @@ interface Props {
 const DeleteAccount = ({ userData, disabled }: Props) => {
   let navigate = useNavigate();
   const [deleteUser, { data, loading, error }] = useMutation(DELETE_USER, {
-    refetchQueries: [{ query: SEARCH_USERS, variables: { contains: '' } }],
+    onCompleted() {
+      toast.success(`Uživatel ${name} byl úspěšně smazán`, {});
+    },
+    onError(error) {
+      toast.error(
+        `Uživatele ${name} se nepodařilo smazat: ${error.message}`,
+        {}
+      );
+    },
+    refetchQueries: [
+      'GetSearchUsers' // Query name
+    ],
     awaitRefetchQueries: true
   });
   const { id, name } = userData;
@@ -52,11 +62,7 @@ const DeleteAccount = ({ userData, disabled }: Props) => {
         id: id
       }
     });
-    toast.success(`Uživatel ${name} byl úspěšně smazán`, {});
   };
-  if (error) {
-    toast.error(`Uživatele ${name} se nepodařilo smazat: ${error.message}`, {});
-  }
 
   return (
     <div>
