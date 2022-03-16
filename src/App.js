@@ -10,7 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { AuthContext } from './context/auth-context';
 import { useAuth } from './hooks/auth-hook';
-import { tokenVar, loggedUserVar } from 'src/graphql/cahce';
+import { loggedUserVar } from 'src/graphql/cahce';
 
 const App = () => {
   const { token, login, logout, userId } = useAuth();
