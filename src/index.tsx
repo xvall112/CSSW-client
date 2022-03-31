@@ -9,7 +9,7 @@ import {
 } from '@apollo/client';
 import { cache, tokenVar } from 'src/graphql/cahce';
 
-const endpointUrl = 'http://localhost:9000/graphql';
+const endpointUrl = 'https://cssw-server.herokuapp.com/graphql';
 
 const authLink = new ApolloLink((operation, forward) => {
   const token = tokenVar();
